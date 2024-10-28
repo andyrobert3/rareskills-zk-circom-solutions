@@ -5,9 +5,21 @@ pragma circom 2.1.4;
 // Using a forLoop , add a[0] and a[1] , 4 times in a row .
 
 template ForLoop() {
+  signal input a[2];
+  signal output c;
 
-// Your Code here..
+  signal sum[5];
 
+  sum[0] <== 0;
+
+  for (var i = 0; i < 4; i++) {
+    sum[i+1] <== sum[i] + a[0] + a[1];
+  }
+
+  c <== sum[4];
 }  
 
 component main = ForLoop();
+
+
+// (a + b) - 2ab = 

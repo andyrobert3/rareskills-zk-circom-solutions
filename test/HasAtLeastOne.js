@@ -19,7 +19,9 @@ describe("HasAtLeastOne -- returns true if the element is in the list", function
     let circuit;
 
     before(async () => {
-        circuit = await wasm_tester(path.join(__dirname, "../HasAtLeastOne/", "HasAtLeastOne.circom"));
+        circuit = await wasm_tester(path.join(__dirname, "../HasAtLeastOne/", "HasAtLeastOne.circom"), {
+            include: 'node_modules/circomlib/circuits' 
+        });
         await circuit.loadConstraints();
     });
 

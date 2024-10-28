@@ -14,7 +14,7 @@ describe("Equality Test ", function (){
     this.timeout(100000);
 
     it("Check Equality", async()=>{
-        const circuit = await wasm_tester(path.join(__dirname,"../Equality","Equality.circom"));
+        const circuit = await wasm_tester(path.join(__dirname,"../Equality","Equality.circom"), { include: 'node_modules/circomlib/circuits' });
         await circuit.loadConstraints();
         let witness ; 
         // 2 == 2 && 2 == 2 

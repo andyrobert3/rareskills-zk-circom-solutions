@@ -16,7 +16,7 @@ describe("Add Test ", function (){
     this.timeout(100000);
 
     it("Should test if everything is binary (0 or 1)", async() => {
-        const circuit = await wasm_tester(path.join(__dirname,"../AllBinary/","AllBinary.circom"));
+        const circuit = await wasm_tester(path.join(__dirname,"../AllBinary/","AllBinary.circom"), { include: 'node_modules/circomlib/circuits' });
         await circuit.loadConstraints();
         
         expect(circuit.constraints.length >= 4, "underconstrained circuit");

@@ -5,3 +5,9 @@ cache/
 .DS_Store
 
 artifacts/
+
+# Circuit compilation outputs
+/*/*.r1cs
+/*/*_cpp
+/*/*_js
+/*/*.sym
