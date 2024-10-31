@@ -10,6 +10,28 @@ template IntDivOut(n) {
     signal input denominator;
     signal output out;
 
+    // Check if denominator is zero
+    component isZero = IsZero();
+    isZero.in <== denominator;
+    isZero.out === 0;
+
+    out <-- numerator \ denominator;
+
+    // Get remainder 
+    signal remainder;
+    remainder <-- numerator % denominator;
+
+    // Enforce constraint that remainder < denominator
+    component isLessThan = LessThan(n);
+    isLessThan.in[0] <== remainder;
+    isLessThan.in[1] <== denominator;
+    isLessThan.out === 1;
+
+    // Enforce constraint that numerator == denominator * out + remainder
+    component isEqual = IsEqual();
+    isEqual.in[0] <== numerator;
+    isEqual.in[1] <== denominator * out + remainder;
+    isEqual.out === 1;
 }
 
 component main = IntDivOut(252);
