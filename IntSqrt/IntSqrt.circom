@@ -25,28 +25,45 @@ include "../node_modules/circomlib/circuits/bitify.circom";
 template IntSqrt(n) {
     signal input in[2];
 
-    // Check that in[0] is at least 1
-    component GreaterEqThan = GreaterEqThan(n);
-    GreaterEqThan.in[0] <== in[0];
-    GreaterEqThan.in[1] <== 1;
-    GreaterEqThan.out === 1;
+    // Input range checks
+    component lteA = LessEqThan(n);
+    lteA.in[0] <== in[0];
+    lteA.in[1] <== (2 ** n) - 1;
+    lteA.out === 1;
 
-    // Check if it overflows the field via the bits
-    component num2bitsDecrement = Num2Bits(n);
-    num2bitsDecrement.in <== (in[0] - 1) * (in[0] - 1);
-    component num2bitsIncrement = Num2Bits(n);
-    num2bitsIncrement.in <== (in[0] + 1) * (in[0] + 1);
+    component lteB = LessEqThan(n);
+    lteB.in[0] <== in[1];
+    lteB.in[1] <== (2 ** n) - 1;
+    lteB.out === 1;
+
+    // Special cases:
+    // 1. a -> 0, b -> 0
+    // 2. a -> 1, b -> 1
+    component isAZeroBZero = IsEqual();
+    isAZeroBZero.in[0] <== in[0];
+    isAZeroBZero.in[1] <== 0;
+    signal c1 <== isAZeroBZero.out;
+
+    component isAOneBOne = IsEqual();
+    isAOneBOne.in[0] <== in[0];
+    isAOneBOne.in[1] <== 1;
+    signal c2 <== isAOneBOne.out;
+
+    // Else condition
+    signal c3 <== 1 - (c1 + c2);
 
     // Enforce integer square roots
     component isLessThan = LessEqThan(n);
     isLessThan.in[0] <== (in[0] - 1) * (in[0] - 1);
     isLessThan.in[1] <== in[1];
-    isLessThan.out === 1;
 
     component isGreaterThan = GreaterThan(n);
     isGreaterThan.in[0] <== (in[0] + 1) * (in[0] + 1);
     isGreaterThan.in[1] <== in[1];
-    isGreaterThan.out === 1;
+
+    // Constraint for if else conditions
+    signal enforceIntegerSqrt <== isLessThan.out * isGreaterThan.out;
+    c1 + c2 + (c3 * enforceIntegerSqrt) === 1;
 }
 
 component main = IntSqrt(252);

@@ -10,6 +10,18 @@ template IntDivOut(n) {
     signal input denominator;
     signal output out;
 
+    // Range checks on inputs
+    component lteNumerator = LessEqThan(n);
+    component lteDenominator = LessEqThan(n);
+
+    lteNumerator.in[0] <== numerator;
+    lteNumerator.in[1] <== (2 ** n) - 1;
+    lteNumerator.out === 1;
+
+    lteDenominator.in[0] <== denominator;
+    lteDenominator.in[1] <== (2 ** n) - 1;
+    lteDenominator.out === 1;
+        
     // Check if denominator is zero
     component isZero = IsZero();
     isZero.in <== denominator;
@@ -20,6 +32,12 @@ template IntDivOut(n) {
     // Get remainder 
     signal remainder;
     remainder <-- numerator % denominator;
+
+    // Range checks on numerator <- quotient * denominator + remainder
+    component lteQuotientDenominator = LessEqThan(n);
+    lteQuotientDenominator.in[0] <== out * denominator + remainder;
+    lteQuotientDenominator.in[1] <== (2 ** n) - 1;
+    lteQuotientDenominator.out === 1;
 
     // Enforce constraint that remainder < denominator
     component isLessThan = LessThan(n);

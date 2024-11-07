@@ -43,33 +43,52 @@ template IntSqrtOut(n) {
     signal input in;
     signal output out;
 
-    out <-- intSqrtFloor(in);
+    signal sqrt <-- intSqrtFloor(in);
 
     // constrain out using your
     // work from IntSqrt
 
-    // Check that "in" is at least 1
-    component GreaterEqThan = GreaterEqThan(n);
-    GreaterEqThan.in[0] <== in;
-    GreaterEqThan.in[1] <== 1;
-    GreaterEqThan.out === 1;
+    // Signal range checks
+    component lteIn = LessEqThan(n);
+    lteIn.in[0] <== in;
+    lteIn.in[1] <== (2 ** n) - 1;
+    lteIn.out === 1;
 
-    // Check if it overflows the field via the bits
-    component num2bitsDecrement = Num2Bits(n);
-    num2bitsDecrement.in <== (out - 1) * (out - 1);
-    component num2bitsIncrement = Num2Bits(n);
-    num2bitsIncrement.in <== (out + 1) * (out + 1);
+    component lteSqrt = LessEqThan(n);
+    lteSqrt.in[0] <== sqrt;
+    lteSqrt.in[1] <== (2 ** n) - 1;
+    lteSqrt.out === 1;
+
+    // Special cases:
+    // 1. a -> 0, b -> 0
+    // 2. a -> 1, b -> 1
+    component isAZeroBZero = IsEqual();
+    isAZeroBZero.in[0] <== in;
+    isAZeroBZero.in[1] <== 0;
+    signal c1 <== isAZeroBZero.out;
+
+    component isAOneBOne = IsEqual();
+    isAOneBOne.in[0] <== in;
+    isAOneBOne.in[1] <== 1;
+    signal c2 <== isAOneBOne.out;
+
+    // Else condition
+    signal c3 <== 1 - (c1 + c2);
 
     // Enforce integer square roots
     component isLessThan = LessEqThan(n);
-    isLessThan.in[0] <== (out - 1) * (out - 1);
+    isLessThan.in[0] <== (sqrt - 1) * (sqrt - 1);
     isLessThan.in[1] <== in;
-    isLessThan.out === 1;
 
     component isGreaterThan = GreaterThan(n);
-    isGreaterThan.in[0] <== (out + 1) * (out + 1);
+    isGreaterThan.in[0] <== (sqrt + 1) * (sqrt + 1);
     isGreaterThan.in[1] <== in;
-    isGreaterThan.out === 1;
+
+    // Constraint for if else conditions
+    signal enforceIntegerSqrt <== isLessThan.out * isGreaterThan.out;
+    c1 + c2 + (c3 * enforceIntegerSqrt) === 1;
+    out <== sqrt;
+
 }
 
 component main = IntSqrtOut(252);

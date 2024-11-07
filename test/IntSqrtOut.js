@@ -51,6 +51,25 @@ describe("integer square root computation", function() {
         expect(Fr.eq(Fr.e(out), Fr.e(3))).to.be.true;
     });
 
+    it("given 0 returns 0", async () => {
+        let witness = await circuit.calculateWitness({
+            "in": 0
+        }, true);
+
+        let out = witness[1];
+        expect(Fr.eq(Fr.e(out), Fr.e(0))).to.be.true;
+    });
+
+
+    it("given 1 returns 1", async () => {
+        let witness = await circuit.calculateWitness({
+            "in": 1
+        }, true);
+
+        let out = witness[1];
+        expect(Fr.eq(Fr.e(out), Fr.e(1))).to.be.true;
+    });
+
     it("given 133333333333337 returns 11547005", async () => {
         let witness = await circuit.calculateWitness({
             "in": 133333333333337 

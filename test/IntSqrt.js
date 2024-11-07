@@ -37,6 +37,21 @@ describe("integer square root validation", function() {
         }, true)).to.not.eventually.be.rejected;
     });
 
+    it("Should accept [0, 0]", async () => {
+
+        await expect(circuit.calculateWitness({
+            "in": [0, 0]
+        }, true)).to.not.eventually.be.rejected;
+    });
+
+    it("Should accept [1, 1]", async () => {
+
+        await expect(circuit.calculateWitness({
+            "in": [1, 1]
+        }, true)).to.not.eventually.be.rejected;
+    });
+
+
     it("Should reject [2, 9]", async () => {
 
         await expect(circuit.calculateWitness({
