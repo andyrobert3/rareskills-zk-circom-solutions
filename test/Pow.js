@@ -14,7 +14,9 @@ describe("Power Modulo Test ", function (){
     this.timeout(100000);
 
     it("Should create a Power circuit", async()=>{
-        const circuit = await wasm_tester(path.join(__dirname,"../Power","pow.circom"));
+        const circuit = await wasm_tester(path.join(__dirname,"../Power","pow.circom"), {
+            include: 'node_modules/circomlib/circuits'
+        });
         await circuit.loadConstraints();
         let witness ; 
         // 2**4 = 16
